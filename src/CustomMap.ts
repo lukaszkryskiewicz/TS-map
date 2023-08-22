@@ -1,8 +1,10 @@
-interface MarkerType {
+export interface MarkerType {
   location: {
     lat: number;
     lng: number;
   };
+  content(): string;
+  color: string;
 }
 
 export class CustomMap {
@@ -19,10 +21,20 @@ export class CustomMap {
   }
 
   addMarker(markerType: MarkerType): void{
-    new google.maps.Marker({
+    const marker = new google.maps.Marker({
       map: this.googleMap,
-      position: markerType.location
+      position: markerType.location,
     })
+
+    marker.addListener('click', ()=> {
+      const infoWindow = new google.maps.InfoWindow({
+        content: markerType.content(),
+      })
+
+      infoWindow.open(this.googleMap, marker);
+    })
+
+    marker.setIcon(`https://maps.google.com/mapfiles/ms/icons/${markerType.color}-dot.png`)
   }
 
 
